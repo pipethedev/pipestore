@@ -5,7 +5,7 @@ A simple real time distributed database system written in go
 ## Stack
 
 - Go (Gin framework)
-- Docker (Compose for setting up Fate, Swarm for deploying user apps)
+- Docker
 
 ## Setting it up on your server
 
