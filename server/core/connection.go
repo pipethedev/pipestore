@@ -5,8 +5,13 @@ import (
 	"net"
 )
 
-func StartTCP() {
-	listener, err := net.Listen("tcp", ":8080")
+func StartTCP(username string, apiKey string) {
+	if !authenticate(username, apiKey) {
+		fmt.Println("Invalid pipestore credentials, unable to perform connection")
+		return
+	}
+
+	listener, err := net.Listen("tcp", ":5771")
 
 	if err != nil {
 		fmt.Println("Error starting server:", err)
@@ -15,7 +20,7 @@ func StartTCP() {
 
 	defer listener.Close()
 
-	fmt.Println("Server started. Listening on port :8080")
+	fmt.Println("Server started. Listening on port :5771")
 
 	for {
 		conn, err := listener.Accept()
@@ -25,11 +30,11 @@ func StartTCP() {
 			continue
 		}
 
-		go HandleConnection(conn)
+		go handleConnection(conn)
 	}
 }
 
-func HandleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	fmt.Println("Connection established from:", conn.RemoteAddr())
@@ -50,4 +55,8 @@ func HandleConnection(conn net.Conn) {
 	response := []byte("Connected to pipebase db")
 
 	conn.Write(response)
+}
+
+func authenticate(username string, apiKey string) bool {
+	return username == "pipethedev" && apiKey == "123"
 }
