@@ -17,7 +17,7 @@ var credentials types.UserCredentials
 // Todo: This should exist on a docker volume instead
 const adminDirectory = ".pipebase/admin"
 
-func ExecuteInitialization(cmd *cobra.Command, args []string) {
+func ExecuteInitialization(config types.InitConfig, cmd *cobra.Command, args []string) {
 	if _, err := os.Stat(adminDirectory); os.IsNotExist(err) {
 
 		err := os.MkdirAll(adminDirectory, os.ModePerm)
@@ -35,6 +35,8 @@ func ExecuteInitialization(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	credentials.Username = config.Username
+
 	if credentials.Username == "" {
 		fmt.Print("Enter Pipebase username: ")
 		fmt.Scanln(&credentials.Username)
@@ -46,7 +48,7 @@ func ExecuteInitialization(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	fmt.Printf("Updated credentials:\nUsername: %s\nAPI Key: %s\n", credentials.Username, credentials.APIKey)
+	fmt.Printf("Created credentials:\nUsername: %s\nAPI Key: %s\n", credentials.Username, credentials.APIKey)
 
 	err := saveCredentialsToFile(credentials, credentialsFile)
 

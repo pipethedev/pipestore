@@ -5,3 +5,7 @@ type UserCredentials struct {
 	Password string
 	APIKey   string
 }
+
+type InitConfig struct {
+	Username string
+}
