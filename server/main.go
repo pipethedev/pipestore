@@ -1,11 +1,12 @@
-package server
+package main
 
 import (
 	"fmt"
+	"pipebase/server/core"
 )
 
 func main() {
-	fmt.Println("Starting pipebase...")
+	fmt.Println("Pipestore is starting..")
 
-	StartTCP()
+	core.StartTCP()
 }
