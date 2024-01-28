@@ -11,13 +11,13 @@ import (
 func main() {
 	_ = godotenv.Load()
 
-	fmt.Println("Pipestore is starting..")
-
 	port, err := utils.AvailablePort()
 
 	if err != nil {
 		fmt.Println("Unable to assign port")
 	}
+
+	fmt.Printf("Starting pipestore at port %d", port)
 
 	core.StartTCP(port)
 }
