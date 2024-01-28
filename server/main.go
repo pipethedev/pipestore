@@ -8,5 +8,5 @@ import (
 func main() {
 	fmt.Println("Pipestore is starting..")
 
-	core.StartTCP("pipethedev", "123")
+	core.StartTCP()
 }

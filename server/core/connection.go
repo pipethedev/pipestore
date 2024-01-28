@@ -3,14 +3,14 @@ package core
 import (
 	"fmt"
 	"net"
+	"pipebase/server/types"
+	"sync"
 )
 
-func StartTCP(username string, apiKey string) {
-	if !authenticate(username, apiKey) {
-		fmt.Println("Invalid pipestore credentials, unable to perform connection")
-		return
-	}
+var sessions = make(map[net.Conn]*types.Session)
+var mutex = &sync.Mutex{}
 
+func StartTCP() {
 	listener, err := net.Listen("tcp", ":5771")
 
 	if err != nil {
@@ -30,11 +30,11 @@ func StartTCP(username string, apiKey string) {
 			continue
 		}
 
-		go handleConnection(conn)
+		go handleAuthentication(conn)
 	}
 }
 
-func handleConnection(conn net.Conn) {
+func handleAuthentication(conn net.Conn) {
 	defer conn.Close()
 
 	fmt.Println("Connection established from:", conn.RemoteAddr())
@@ -48,15 +48,54 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 
-	data := buffer[n]
+	authenticationData := buffer[:n]
+
+	fmt.Println("auth data", authenticationData)
+
+	if !authenticate(conn, authenticationData) {
+		fmt.Println("Authentication failed for:", conn.RemoteAddr())
+		return
+	}
+
+	fmt.Println("Authentication successful for:", conn.RemoteAddr())
+
+	session := &types.Session{
+		Conn:     conn,
+		Active:   true,
+		Username: "username",
+		APIKey:   "password",
+	}
+
+	mutex.Lock()
+	sessions[conn] = session
+	mutex.Unlock()
+
+	go handleConnection(conn)
+}
+
+func authenticate(conn net.Conn, authData []byte) bool {
+	//Todo: This could use a JWT authentication
+	return true
+}
+
+func handleConnection(conn net.Conn) {
+	defer conn.Close()
+
+	fmt.Println("Connection established from:", conn.RemoteAddr())
+
+	buffer := make([]byte, 1024)
+
+	n, err := conn.Read(buffer)
+	if err != nil {
+		fmt.Println("Error reading:", err)
+		return
+	}
+
+	data := buffer[:n]
 
 	fmt.Println("Received data", string(data))
 
 	response := []byte("Connected to pipebase db")
 
 	conn.Write(response)
-}
-
-func authenticate(username string, apiKey string) bool {
-	return username == "pipethedev" && apiKey == "123"
 }
