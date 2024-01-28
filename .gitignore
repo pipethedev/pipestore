@@ -5,3 +5,5 @@
 ./cli/main
 
 ./server/server
+
+./server/.env

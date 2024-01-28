@@ -111,13 +111,7 @@ func handleConnection(conn net.Conn) {
 }
 
 func extractAuthenticationCredentials(authData []byte) (string, string, error) {
-	var authStruct struct {
-		Request struct{} `json:"request"`
-		Auth    struct {
-			Username string `json:"username"`
-			APIKey   string `json:"apiKey"`
-		} `json:"auth"`
-	}
+	var authStruct types.RequestStruct
 
 	err := json.Unmarshal(authData, &authStruct)
 	if err != nil {
