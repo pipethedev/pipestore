@@ -10,6 +10,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var username string
+var passkey string
+
 var config types.InitConfig
 
 var initCmd = &cobra.Command{
@@ -20,17 +23,18 @@ var initCmd = &cobra.Command{
 		if username != "" {
 			config.Username = username
 		}
+		if passkey != "" {
+			config.PassKey = passkey
+		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		services.ExecuteInitialization(config, cmd, args)
 	},
 }
 
-var username string
-
 func init() {
 	rootCmd.AddCommand(initCmd)
 
 	initCmd.Flags().StringVarP(&username, "username", "u", "", "pipebase username")
-	initCmd.Flags().StringVarP(&username, "passkey", "p", "", "pipebase passkey")
+	initCmd.Flags().StringVarP(&passkey, "passkey", "p", "", "pipebase passkey")
 }

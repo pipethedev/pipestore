@@ -8,4 +8,5 @@ type UserCredentials struct {
 
 type InitConfig struct {
 	Username string
+	PassKey  string
 }
