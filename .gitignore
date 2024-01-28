@@ -3,3 +3,5 @@
 .idea
 
 ./cli/main
+
+./server/server
