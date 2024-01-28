@@ -1,7 +1,9 @@
 package core
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"pipebase/server/types"
 	"sync"
@@ -35,8 +37,6 @@ func StartTCP() {
 }
 
 func handleAuthentication(conn net.Conn) {
-	defer conn.Close()
-
 	fmt.Println("Connection established from:", conn.RemoteAddr())
 
 	buffer := make([]byte, 1024)
@@ -50,9 +50,14 @@ func handleAuthentication(conn net.Conn) {
 
 	authenticationData := buffer[:n]
 
-	fmt.Println("auth data", authenticationData)
+	username, apiKey, err := extractAuthenticationCredentials(authenticationData)
 
-	if !authenticate(conn, authenticationData) {
+	if err != nil {
+		fmt.Println("Error extracting credentials:", err)
+		return
+	}
+
+	if !authenticate(username, apiKey) {
 		fmt.Println("Authentication failed for:", conn.RemoteAddr())
 		return
 	}
@@ -62,8 +67,8 @@ func handleAuthentication(conn net.Conn) {
 	session := &types.Session{
 		Conn:     conn,
 		Active:   true,
-		Username: "username",
-		APIKey:   "password",
+		Username: username,
+		APIKey:   apiKey,
 	}
 
 	mutex.Lock()
@@ -73,29 +78,56 @@ func handleAuthentication(conn net.Conn) {
 	go handleConnection(conn)
 }
 
-func authenticate(conn net.Conn, authData []byte) bool {
-	//Todo: This could use a JWT authentication
-	return true
-}
-
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	fmt.Println("Connection established from:", conn.RemoteAddr())
 
-	buffer := make([]byte, 1024)
+	for {
+		buffer := make([]byte, 1024)
 
-	n, err := conn.Read(buffer)
-	if err != nil {
-		fmt.Println("Error reading:", err)
-		return
+		n, err := conn.Read(buffer)
+		if err != nil {
+			if err == io.EOF {
+				fmt.Println("Connection closed by client:", conn.RemoteAddr())
+				break
+			}
+			fmt.Println("Error reading:", err)
+			return
+		}
+
+		data := buffer[:n]
+
+		fmt.Println("Received data", string(data))
+
+		response := []byte("Connected to pipebase db")
+
+		_, err = conn.Write(response)
+		if err != nil {
+			fmt.Println("Error writing response:", err)
+			return
+		}
+	}
+}
+
+func extractAuthenticationCredentials(authData []byte) (string, string, error) {
+	var authStruct struct {
+		Request struct{} `json:"request"`
+		Auth    struct {
+			Username string `json:"username"`
+			APIKey   string `json:"apiKey"`
+		} `json:"auth"`
 	}
 
-	data := buffer[:n]
+	err := json.Unmarshal(authData, &authStruct)
+	if err != nil {
+		return "", "", err
+	}
 
-	fmt.Println("Received data", string(data))
+	return authStruct.Auth.Username, authStruct.Auth.APIKey, nil
+}
 
-	response := []byte("Connected to pipebase db")
-
-	conn.Write(response)
+func authenticate(userName string, apiKey string) bool {
+	//Todo: This could use a JWT authentication
+	return true
 }
