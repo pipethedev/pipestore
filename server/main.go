@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"pipebase/cli/utils"
 	"pipebase/server/core"
 
 	"github.com/joho/godotenv"
@@ -12,5 +13,11 @@ func main() {
 
 	fmt.Println("Pipestore is starting..")
 
-	core.StartTCP()
+	port, err := utils.AvailablePort()
+
+	if err != nil {
+		fmt.Println("Unable to assign port")
+	}
+
+	core.StartTCP(port)
 }

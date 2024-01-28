@@ -30,7 +30,6 @@ func ExecuteInitialization(config types.InitConfig, cmd *cobra.Command, args []s
 	credentialsFile := filepath.Join(adminDirectory, "pipestore_credentials.json")
 
 	if _, err := os.Stat(credentialsFile); err == nil {
-		// Credentials file already exists, throw an error
 		fmt.Println("Pipebase administrator has been created before")
 		return
 	}
@@ -42,6 +41,11 @@ func ExecuteInitialization(config types.InitConfig, cmd *cobra.Command, args []s
 		fmt.Scanln(&credentials.Username)
 	}
 
+	if config.PassKey == "" {
+		fmt.Print("Enter Pipebase passkey: ")
+		fmt.Scanln(&config.PassKey)
+	}
+
 	if credentials.Password == "" {
 		if key, err := utils.GenerateAPIKey(); err == nil {
 			credentials.APIKey = key
@@ -50,7 +54,7 @@ func ExecuteInitialization(config types.InitConfig, cmd *cobra.Command, args []s
 
 	fmt.Printf("Created credentials:\nUsername: %s\nAPI Key: %s\n", credentials.Username, credentials.APIKey)
 
-	err := saveCredentialsToFile(credentials, credentialsFile)
+	err := saveCredentialsToFile(credentials, credentialsFile, config.PassKey)
 
 	if err != nil {
 		fmt.Println("Error saving credentials to file:", err)
@@ -60,8 +64,8 @@ func ExecuteInitialization(config types.InitConfig, cmd *cobra.Command, args []s
 	fmt.Println("Pipebase administrator created successfully.")
 }
 
-func saveCredentialsToFile(credentials types.UserCredentials, filePath string) error {
-	encryptedCredentials, err := utils.Encrypt(credentials, "")
+func saveCredentialsToFile(credentials types.UserCredentials, filePath string, passKey string) error {
+	encryptedCredentials, err := utils.Encrypt(credentials, passKey)
 
 	if err != nil {
 		return err

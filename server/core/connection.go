@@ -12,8 +12,10 @@ import (
 var sessions = make(map[net.Conn]*types.Session)
 var mutex = &sync.Mutex{}
 
-func StartTCP() {
-	listener, err := net.Listen("tcp", ":5771")
+func StartTCP(port int) {
+	address := fmt.Sprintf(":%d", port)
+
+	listener, err := net.Listen("tcp", address)
 
 	if err != nil {
 		fmt.Println("Error starting server:", err)
