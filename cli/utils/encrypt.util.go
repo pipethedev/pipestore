@@ -9,6 +9,7 @@ func Encrypt(credentials types.UserCredentials, key string) (types.UserCredentia
 	return types.UserCredentials{
 		Username: credentials.Username,
 		APIKey:   credentials.APIKey,
+		Password: credentials.Password,
 	}, nil
 }
 
