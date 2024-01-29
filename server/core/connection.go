@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"pipebase/server/config"
 	"pipebase/server/types"
@@ -101,6 +102,14 @@ func handleAuthentication(conn net.Conn, connectionPool chan struct{}) {
 
 	fmt.Println("Authentication successful for:", conn.RemoteAddr())
 
+	response := []byte("Authentication successful \n")
+
+	_, err = conn.Write(response)
+	if err != nil {
+		fmt.Println("Error writing response:", err)
+		return
+	}
+
 	session := &types.Session{
 		Conn:     conn,
 		Active:   true,
@@ -145,19 +154,11 @@ func handleConnection(session *types.Session) {
 		err = json.Unmarshal(data, &recordStruct)
 
 		if err != nil {
-			fmt.Println("Invalid record request:", err)
+			log.Println("Invalid record request:", err)
 			return
 		}
 
-		fmt.Println("Received data", string(data))
-
-		response := []byte("Connected to pipebase db")
-
-		_, err = session.Conn.Write(response)
-		if err != nil {
-			fmt.Println("Error writing response:", err)
-			return
-		}
+		RouteOperationRequest(recordStruct, session)
 	}
 }
 

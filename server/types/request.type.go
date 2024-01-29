@@ -13,6 +13,6 @@ type RecordRequestStruct struct {
 	Data struct {
 		Type      enums.Operation `json:"type"`
 		TableName string          `json:"tableName"`
-		Record    struct{}
+		Record    interface{}     `json:"record"`
 	} `json:"data"`
 }
