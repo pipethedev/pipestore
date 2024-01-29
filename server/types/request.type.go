@@ -1,9 +1,13 @@
 package types
 
-type RequestStruct struct {
-	Request struct{} `json:"request"`
-	Auth    struct {
+type AuthRequestStruct struct {
+	Auth struct {
 		Username string `json:"username"`
 		APIKey   string `json:"apiKey"`
 	} `json:"auth"`
+}
+
+type RecordRequestStruct struct {
+	Type   string
+	Record struct{}
 }

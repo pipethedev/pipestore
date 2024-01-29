@@ -78,6 +78,15 @@ func handleAuthentication(conn net.Conn, connectionPool chan struct{}) {
 
 	authenticationData := buffer[:n]
 
+	var authStruct types.AuthRequestStruct
+
+	err = json.Unmarshal(authenticationData, &authStruct)
+
+	if err != nil {
+		fmt.Println("Invalid authentication request:", err)
+		return
+	}
+
 	username, apiKey, err := extractAuthenticationCredentials(authenticationData)
 
 	if err != nil {
@@ -126,6 +135,15 @@ func handleConnection(conn net.Conn) {
 
 		data := buffer[:n]
 
+		var recordStruct types.RecordRequestStruct
+
+		err = json.Unmarshal(data, &recordStruct)
+
+		if err != nil {
+			fmt.Println("Invalid record request:", err)
+			return
+		}
+
 		fmt.Println("Received data", string(data))
 
 		response := []byte("Connected to pipebase db")
@@ -139,7 +157,7 @@ func handleConnection(conn net.Conn) {
 }
 
 func extractAuthenticationCredentials(authData []byte) (string, string, error) {
-	var authStruct types.RequestStruct
+	var authStruct types.AuthRequestStruct
 
 	err := json.Unmarshal(authData, &authStruct)
 	if err != nil {
