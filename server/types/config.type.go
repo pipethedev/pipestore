@@ -1,5 +1,7 @@
 package types
 
 type Config struct {
-	SecretKey string
+	SecretKey      string
+	PORT           int
+	MaxConnections int
 }

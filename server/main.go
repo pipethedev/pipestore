@@ -17,7 +17,7 @@ func main() {
 		fmt.Println("Unable to assign port")
 	}
 
-	fmt.Printf("Starting pipestore at port %d", port)
+	fmt.Printf("Starting pipestore at port %d\n", port)
 
 	core.StartTCP(port)
 }

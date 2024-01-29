@@ -5,12 +5,18 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"pipebase/server/config"
 	"pipebase/server/types"
 	"sync"
+	"sync/atomic"
 )
+
+var maxConnections = config.LoadConfig().MaxConnections
 
 var sessions = make(map[net.Conn]*types.Session)
 var mutex = &sync.Mutex{}
+
+var connectionCount int64
 
 func StartTCP(port int) {
 	address := fmt.Sprintf(":%d", port)
@@ -24,21 +30,41 @@ func StartTCP(port int) {
 
 	defer listener.Close()
 
-	fmt.Println("Server started. Listening on port :5771")
+	fmt.Printf("Server started. Listening on port %s\n", address)
+
+	connectionPool := make(chan struct{}, maxConnections)
 
 	for {
-		conn, err := listener.Accept()
+		select {
+		case connectionPool <- struct{}{}:
+			conn, err := listener.Accept()
+			if err != nil {
+				fmt.Println("Error accepting connection:", err)
+				<-connectionPool
+				continue
+			}
 
-		if err != nil {
-			fmt.Println("Error accepting connection:", err)
-			continue
+			atomic.AddInt64(&connectionCount, 1)
+			fmt.Printf("Connection #%d established from: %s\n", atomic.LoadInt64(&connectionCount), conn.RemoteAddr())
+			go handleAuthentication(conn, connectionPool)
+		default:
+			fmt.Println("Connection rejected: Connection pool is full")
+			conn, err := listener.Accept()
+			if err != nil {
+				fmt.Println("Error accepting connection:", err)
+				continue
+			}
+			conn.Close()
 		}
-
-		go handleAuthentication(conn)
 	}
 }
 
-func handleAuthentication(conn net.Conn) {
+func handleAuthentication(conn net.Conn, connectionPool chan struct{}) {
+	defer func() {
+		conn.Close()
+		<-connectionPool
+	}()
+
 	fmt.Println("Connection established from:", conn.RemoteAddr())
 
 	buffer := make([]byte, 1024)
