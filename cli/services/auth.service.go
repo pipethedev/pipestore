@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"pipebase/cli/types"
 	"runtime"
@@ -8,7 +9,7 @@ import (
 	"github.com/99designs/keyring"
 )
 
-func SaveCredentials(credentials types.UserCredentials) {
+func SaveCredentials(userCredentials types.UserCredentials) {
 	service := "pipebase"
 
 	platform := runtime.GOOS
@@ -17,12 +18,16 @@ func SaveCredentials(credentials types.UserCredentials) {
 
 	if platform == "darwin" || platform == "linux" {
 		credentials, err = getCredentialsFromKeychain(service)
+		if credentials != (types.UserCredentials{}) {
+			fmt.Println("Pipebase administrator already exists")
+			return
+		}
 	} else {
 		// Handle other platforms (e.g., store in a file)
 	}
 
 	if err != nil {
-		err = saveCredentialsToKeychain(credentials, service)
+		err = saveCredentialsToKeychain(userCredentials, service)
 		if err != nil {
 			fmt.Println("Error saving credentials to keychain:", err)
 			return
@@ -31,19 +36,19 @@ func SaveCredentials(credentials types.UserCredentials) {
 }
 
 func saveCredentialsToKeychain(credentials types.UserCredentials, service string) error {
-	ring, _ := keyring.Open(keyring.Config{
-		ServiceName: "pipebase_admin",
+	ring, err := keyring.Open(keyring.Config{
+		ServiceName: service,
 	})
-
-	if err := ring.Set(keyring.Item{Key: "username", Data: []byte(string(credentials.Username))}); err != nil {
+	if err != nil {
 		return err
 	}
 
-	if err := ring.Set(keyring.Item{Key: "password", Data: []byte(string(credentials.Password))}); err != nil {
+	credentialsJSON, err := json.Marshal(credentials)
+	if err != nil {
 		return err
 	}
 
-	if err := ring.Set(keyring.Item{Key: "apiKey", Data: []byte(string(credentials.APIKey))}); err != nil {
+	if err := ring.Set(keyring.Item{Key: "credentials", Data: credentialsJSON}); err != nil {
 		return err
 	}
 
@@ -62,25 +67,12 @@ func getCredentialsFromKeychain(service string) (types.UserCredentials, error) {
 		return credentials, err
 	}
 
-	getItem := func(key string) (string, error) {
-		item, err := ring.Get(key)
-		if err != nil {
-			return "", err
-		}
-		return string(item.Data), nil
-	}
-
-	credentials.Username, err = getItem("username")
+	credentialsJSON, err := ring.Get("credentials")
 	if err != nil {
 		return credentials, err
 	}
 
-	credentials.Password, err = getItem("password")
-	if err != nil {
-		return credentials, err
-	}
-
-	credentials.APIKey, err = getItem("apiKey")
+	err = json.Unmarshal([]byte(credentialsJSON.Data), &credentials)
 	if err != nil {
 		return credentials, err
 	}

@@ -32,25 +32,3 @@ func ExecuteInitialization(config types.InitConfig, cmd *cobra.Command, args []s
 
 	fmt.Println("Pipebase administrator created successfully.")
 }
-
-// func saveCredentialsToFile(credentials types.UserCredentials, filePath string, passKey string) error {
-// 	encryptedCredentials, err := utils.Encrypt(credentials, passKey)
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	data, err := json.Marshal(encryptedCredentials)
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	err = ioutil.WriteFile(filePath, data, 0644)
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
