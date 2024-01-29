@@ -1,3 +1,5 @@
 package operations
 
-func UpateOne() {}
+func UpdateOne() {}
+
+func UpdateBulk() {}

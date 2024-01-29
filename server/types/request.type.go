@@ -1,5 +1,7 @@
 package types
 
+import "pipebase/server/enums"
+
 type AuthRequestStruct struct {
 	Auth struct {
 		Username string `json:"username"`
@@ -8,6 +10,6 @@ type AuthRequestStruct struct {
 }
 
 type RecordRequestStruct struct {
-	Type   string
+	Type   enums.Operation
 	Record struct{}
 }

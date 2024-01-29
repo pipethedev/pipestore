@@ -1,13 +1,21 @@
 package enums
 
-type Operation int
+type Operation string
 
 const (
-	CreateOperation Operation = iota
+	CreateOperation Operation = "CREATE"
 
-	ReadOperation
+	BulkCreateOperation Operation = "BULK_CREATE"
 
-	UpdateOperation
+	ReadOneOperation Operation = "READ_ONE"
 
-	DeleteOperation
+	ReadAllOperation Operation = "READ_ALL"
+
+	UpdateOperation Operation = "UPDATE"
+
+	BulkUpdateOperation Operation = "BULK_UPDATE"
+
+	DeleteOneOperation Operation = "DELETE_ONE"
+
+	DeleteAllOperation Operation = "DELETE_ALL"
 )
