@@ -112,21 +112,26 @@ func handleAuthentication(conn net.Conn, connectionPool chan struct{}) {
 	sessions[conn] = session
 	mutex.Unlock()
 
-	go handleConnection(conn)
+	handleConnection(session)
 }
 
-func handleConnection(conn net.Conn) {
-	defer conn.Close()
+func handleConnection(session *types.Session) {
+	defer func() {
+		session.Conn.Close()
+		mutex.Lock()
+		delete(sessions, session.Conn)
+		mutex.Unlock()
+	}()
 
-	fmt.Println("Connection established from:", conn.RemoteAddr())
+	fmt.Println("Connection established from:", session.Conn.RemoteAddr())
 
 	for {
 		buffer := make([]byte, 1024)
 
-		n, err := conn.Read(buffer)
+		n, err := session.Conn.Read(buffer)
 		if err != nil {
 			if err == io.EOF {
-				fmt.Println("Connection closed by client:", conn.RemoteAddr())
+				fmt.Println("Connection closed by client:", session.Conn.RemoteAddr())
 				break
 			}
 			fmt.Println("Error reading:", err)
@@ -148,7 +153,7 @@ func handleConnection(conn net.Conn) {
 
 		response := []byte("Connected to pipebase db")
 
-		_, err = conn.Write(response)
+		_, err = session.Conn.Write(response)
 		if err != nil {
 			fmt.Println("Error writing response:", err)
 			return

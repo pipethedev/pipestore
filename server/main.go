@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"pipebase/cli/utils"
+	"pipebase/server/config"
 	"pipebase/server/core"
 
 	"github.com/joho/godotenv"
@@ -11,11 +11,7 @@ import (
 func main() {
 	_ = godotenv.Load()
 
-	port, err := utils.AvailablePort()
-
-	if err != nil {
-		fmt.Println("Unable to assign port")
-	}
+	port := config.LoadConfig().PORT
 
 	fmt.Printf("Starting pipestore at port %d\n", port)
 

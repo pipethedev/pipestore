@@ -10,6 +10,9 @@ type AuthRequestStruct struct {
 }
 
 type RecordRequestStruct struct {
-	Type   enums.Operation
-	Record struct{}
+	Data struct {
+		Type      enums.Operation `json:"type"`
+		TableName string          `json:"tableName"`
+		Record    struct{}
+	} `json:"data"`
 }

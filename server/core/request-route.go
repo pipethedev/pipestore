@@ -8,7 +8,7 @@ import (
 )
 
 func RouteOperationRequest(request types.RecordRequestStruct) {
-	switch request.Type {
+	switch request.Data.Type {
 	case enums.CreateOperation:
 		operations.SingleCreate()
 	case enums.BulkCreateOperation:
@@ -26,6 +26,6 @@ func RouteOperationRequest(request types.RecordRequestStruct) {
 	case enums.DeleteAllOperation:
 		operations.DeleteAll()
 	default:
-		log.Println("Unknown operation:", request.Type)
+		log.Println("Unknown operation:", request.Data.Type)
 	}
 }
