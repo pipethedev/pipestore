@@ -1,5 +1,36 @@
 package operations
 
-func UpdateOne() {}
+import (
+	"fmt"
+	"pipebase/server/helpers"
+	"pipebase/server/types"
+)
 
-func UpdateBulk() {}
+func UpdateOne(updateRequest types.UpdateRecordRequestStruct) error {
+	tableName := updateRequest.Data.TableName
+
+	if !helpers.CheckIfTableExists(tableName) {
+		return fmt.Errorf("Table %s does not exist", tableName)
+	}
+
+	data, err := helpers.ReadTableData(tableName)
+	if err != nil {
+		return err
+	}
+
+	index := -1
+	for i, record := range data {
+		if helpers.GetValueFromField(record, updateRequest.Data.Query.Field) == updateRequest.Data.Query.Value {
+			index = i
+			break
+		}
+	}
+
+	if index == -1 {
+		return fmt.Errorf("Record not found in table %s with the provided query", tableName)
+	}
+
+	data[index] = updateRequest.Data.Record
+
+	return helpers.WriteTableData(tableName, data)
+}

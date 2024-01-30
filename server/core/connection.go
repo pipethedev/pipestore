@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"pipebase/cli/services"
 	"pipebase/server/config"
 	"pipebase/server/types"
 	"sync"
@@ -95,7 +96,7 @@ func handleAuthentication(conn net.Conn, connectionPool chan struct{}) {
 		return
 	}
 
-	if !authenticate(username, apiKey) {
+	if !authenticate(username, apiKey, conn) {
 		fmt.Println("Authentication failed for:", conn.RemoteAddr())
 		return
 	}
@@ -149,16 +150,16 @@ func handleConnection(session *types.Session) {
 
 		data := buffer[:n]
 
-		var recordStruct types.RecordRequestStruct
+		var genericRequest types.GenericRequest
 
-		err = json.Unmarshal(data, &recordStruct)
+		err = json.Unmarshal(data, &genericRequest)
 
 		if err != nil {
 			log.Println("Invalid record request:", err)
 			return
 		}
 
-		RouteOperationRequest(recordStruct, session)
+		RouteOperationRequest(data, genericRequest, session)
 	}
 }
 
@@ -173,7 +174,28 @@ func extractAuthenticationCredentials(authData []byte) (string, string, error) {
 	return authStruct.Auth.Username, authStruct.Auth.APIKey, nil
 }
 
-func authenticate(userName string, apiKey string) bool {
-	//Todo: This could use a JWT authentication
+func authenticate(userName string, apiKey string, conn net.Conn) bool {
+	credentials, _ := services.GetCredentialsFromKeychain("pipebase")
+
+	if userName != credentials.Username {
+		fmt.Println("Authentication failed [Invalid username] for:", conn.RemoteAddr())
+
+		response := []byte("Authentication failed invalid username or apiKey\n")
+
+		_, _ = conn.Write(response)
+
+		return false
+	}
+
+	if apiKey != credentials.APIKey {
+		fmt.Println("Authentication failed [Invalid apiKey] for:", conn.RemoteAddr())
+
+		response := []byte("Authentication failed invalid username or apiKey\n")
+
+		_, _ = conn.Write(response)
+
+		return false
+	}
+
 	return true
 }

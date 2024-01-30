@@ -1,36 +1,46 @@
 package core
 
 import (
+	"encoding/json"
 	"fmt"
-	"log"
 	"pipebase/server/core/operations"
 	"pipebase/server/enums"
 	"pipebase/server/types"
 )
 
-func RouteOperationRequest(request types.RecordRequestStruct, session *types.Session) {
-	fmt.Println("Received data", request)
-
-	fmt.Printf("Request type: %s", request.Data.Type)
-
-	switch request.Data.Type {
+func RouteOperationRequest(data []byte, genericRequest types.GenericRequest, session *types.Session) {
+	switch genericRequest.Data.Type {
 	case enums.CreateOperation:
-		operations.SingleCreate(request)
+		var SingleCreateRequest types.SingleCreateRecordRequestStruct
+		err := json.Unmarshal(data, &SingleCreateRequest)
+		if err != nil {
+			fmt.Println("Error unmarshaling create request:", err)
+			return
+		}
+		operations.SingleCreate(SingleCreateRequest)
 	case enums.BulkCreateOperation:
-		//operations.BulkCreate()
-	case enums.ReadOneOperation:
-		operations.ReadOne()
+		var BulkCreateRequest types.BulkCreateRecordRequestStruct
+		err := json.Unmarshal(data, &BulkCreateRequest)
+		if err != nil {
+			fmt.Println("Error unmarshaling create request:", err)
+			return
+		}
+		operations.BulkCreate(BulkCreateRequest)
 	case enums.ReadAllOperation:
-		operations.ReadAll(request, session)
+		var ReadAllRequest types.BulkReadRequestStruct
+		err := json.Unmarshal(data, &ReadAllRequest)
+		if err != nil {
+			fmt.Println("Error unmarshaling create request:", err)
+			return
+		}
+		operations.ReadAll(ReadAllRequest)
 	case enums.UpdateOperation:
-		operations.UpdateOne()
-	case enums.BulkUpdateOperation:
-		operations.UpdateBulk()
-	case enums.DeleteOneOperation:
-		operations.DeleteOne()
-	case enums.DeleteAllOperation:
-		operations.DeleteAll()
-	default:
-		log.Println("Unknown operation:", request.Data.Type)
+		var UpdateRequest types.UpdateRecordRequestStruct
+		err := json.Unmarshal(data, &UpdateRequest)
+		if err != nil {
+			fmt.Println("Error unmarshaling create request:", err)
+			return
+		}
+		operations.UpdateOne(UpdateRequest)
 	}
 }

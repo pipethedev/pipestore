@@ -13,8 +13,6 @@ const (
 
 	UpdateOperation Operation = "UPDATE"
 
-	BulkUpdateOperation Operation = "BULK_UPDATE"
-
 	DeleteOneOperation Operation = "DELETE_ONE"
 
 	DeleteAllOperation Operation = "DELETE_ALL"

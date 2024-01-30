@@ -2,12 +2,11 @@ package operations
 
 import (
 	"encoding/json"
-	"log"
 	"pipebase/server/helpers"
 	"pipebase/server/types"
 )
 
-func ReadAll(request types.RecordRequestStruct, session *types.Session) ([]byte, error) {
+func ReadAll(request types.BulkReadRequestStruct) ([]byte, error) {
 	data, err := helpers.ReadTableData(request.Data.TableName)
 
 	if err != nil {
@@ -20,12 +19,6 @@ func ReadAll(request types.RecordRequestStruct, session *types.Session) ([]byte,
 	}
 
 	response := append(jsonData, '\n')
-
-	_, err = session.Conn.Write(response)
-	if err != nil {
-		log.Fatalln("Error writing response:", err)
-		return nil, err
-	}
 
 	return response, nil
 }

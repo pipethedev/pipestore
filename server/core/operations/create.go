@@ -1,35 +1,31 @@
 package operations
 
 import (
-	"fmt"
 	"pipebase/server/helpers"
 	"pipebase/server/types"
 )
 
-func BulkCreate(records []types.RecordRequestStruct) error {
-	if len(records) == 0 {
-		return fmt.Errorf("no records provided for bulk create")
-	}
+func BulkCreate(records types.BulkCreateRecordRequestStruct) error {
+	tableName := records.Data.TableName
 
-	tableName := records[0].Data.TableName
-
-	if err := helpers.CreateTableFile(tableName); err != nil {
-		return err
+	if !helpers.CheckIfTableExists(tableName) {
+		if err := helpers.CreateTableFile(tableName); err != nil {
+			return err
+		}
 	}
 
 	data, err := helpers.ReadTableData(tableName)
+
 	if err != nil {
 		return err
 	}
 
-	for _, record := range records {
-		data = append(data, record.Data.Record)
-	}
+	data = append(data, records.Data.Record...)
 
 	return helpers.WriteTableData(tableName, data)
 }
 
-func SingleCreate(record types.RecordRequestStruct) error {
+func SingleCreate(record types.SingleCreateRecordRequestStruct) error {
 	tableName := record.Data.TableName
 
 	if !helpers.CheckIfTableExists(tableName) {
