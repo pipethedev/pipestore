@@ -19,7 +19,7 @@ func HandleCreateRequest(jsonData []byte, incomingRequest interface{}) ([]byte, 
 		err := json.Unmarshal(jsonData, &singleRecord)
 		if err != nil {
 			fmt.Println("Error unmarshaling create request:", err)
-			return []byte("Error unmarshaling create request:"), err
+			return []byte("Error unmarshaling create request: \n"), err
 		}
 
 		err = singleCreate(singleRecord)
@@ -37,18 +37,18 @@ func HandleCreateRequest(jsonData []byte, incomingRequest interface{}) ([]byte, 
 
 		if err != nil {
 			fmt.Println("Error unmarshaling create-bulk request:", err)
-			return []byte("Error unmarshaling create-bulk request:"), err
+			return []byte("Error unmarshaling create-bulk request: \n"), err
 		}
 
 		err = bulkCreate(bulkRecord)
 
 		if err != nil {
 			fmt.Println("Unable to create bulk record", err)
-			return []byte("Unable to create bulk record"), err
+			return []byte("Unable to create bulk record\n"), err
 		}
 	}
 
-	return []byte("Create operation successfully processed"), nil
+	return []byte("Create operation successfully processed\n"), nil
 }
 
 func bulkCreate(records types.BulkCreateRecordRequestStruct) error {

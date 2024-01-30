@@ -19,14 +19,14 @@ func HandleDeleteRequest(jsonData []byte, incomingRequest interface{}) ([]byte, 
 		err := json.Unmarshal(jsonData, &bulkDeleteRequest)
 		if err != nil {
 			fmt.Println("Error unmarshaling create request:", err)
-			return []byte("Error unmarshaling create request:"), err
+			return []byte("Error unmarshaling create request:\n"), err
 		}
 
 		err = deleteAll(bulkDeleteRequest)
 
 		if err != nil {
 			fmt.Println("Unable to create record", err)
-			return []byte("Unable to create record"), err
+			return []byte("Unable to create record\n"), err
 		}
 	}
 
@@ -43,11 +43,11 @@ func HandleDeleteRequest(jsonData []byte, incomingRequest interface{}) ([]byte, 
 
 		if err != nil {
 			fmt.Println("Unable to create record", err)
-			return []byte("Unable to create record"), err
+			return []byte("Unable to create record\n"), err
 		}
 	}
 
-	return []byte("Delete operation successfully processed"), nil
+	return []byte("Delete operation successfully processed\n"), nil
 }
 
 func deleteAll(deleteRequest types.BulkDeleteRecordRequestStruct) error {

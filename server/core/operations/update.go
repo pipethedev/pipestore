@@ -18,8 +18,8 @@ func HandleUpdateRequest(jsonData []byte, incomingRequest interface{}) ([]byte, 
 
 		err := json.Unmarshal(jsonData, &updateRecord)
 		if err != nil {
-			fmt.Println("Error unmarshaling update request:", err)
-			return []byte("Error unmarshaling update request:"), err
+			fmt.Println("Error unmarshaling update request:\n", err)
+			return []byte("Error unmarshaling update request:\n"), err
 		}
 
 		err = updateOne(updateRecord)
@@ -29,7 +29,7 @@ func HandleUpdateRequest(jsonData []byte, incomingRequest interface{}) ([]byte, 
 			return []byte("Unable to update record"), err
 		}
 	}
-	return []byte("Update operation successfully processed"), nil
+	return []byte("Update operation successfully processed\n"), nil
 }
 
 func updateOne(updateRequest types.UpdateRecordRequestStruct) error {
