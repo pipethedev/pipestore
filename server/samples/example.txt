@@ -1,0 +1,81 @@
+{
+  "data": {
+    "type": "CREATE",
+    "tableName": "users",
+    "record": {
+      "name": "John Doe",
+      "email": "john@example.com",
+      "age": 30
+    }
+  }
+}
+
+{
+  "data": {
+    "type": "BULK_CREATE",
+    "tableName": "users",
+    "record": [
+      {
+        "name": "Alice",
+        "email": "alice@example.com",
+        "age": 25
+      },
+      {
+        "name": "Bob",
+        "email": "bob@example.com",
+        "age": 28
+      }
+    ]
+  }
+}
+
+{
+  "data": {
+    "type": "UPDATE",
+    "tableName": "users",
+    "query": {
+      "field": "email",
+      "value": "john@example.com"
+    },
+    "record": {
+      "name": "John Doe Jr.",
+      "age": 31
+    }
+  }
+}
+
+{
+  "data": {
+    "type": "DELETE_ONE",
+    "tableName": "users",
+    "query": {
+      "field": "email",
+      "value": "john@example.com"
+    }
+  }
+}
+
+{
+  "data": {
+    "type": "DELETE_ALL",
+    "tableName": "users"
+  }
+}
+
+{
+  "data": {
+    "type": "READ_ONE",
+    "tableName": "users",
+    "query": {
+      "field": "email",
+      "value": "alice@example.com"
+    }
+  }
+}
+
+{
+  "data": {
+    "type": "READ_ALL",
+    "tableName": "users"
+  }
+}

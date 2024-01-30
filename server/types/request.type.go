@@ -11,13 +11,13 @@ type AuthRequestStruct struct {
 
 type GenericRequest struct {
 	Data struct {
-		Type enums.Operation `json:"type" enum:"CREATE,BULK_CREATE,READ_ONE,READ_ALL,UPDATE,DELETE_ONE,DELETE_ALL"`
+		Type enums.Operation `json:"type" enum:"CREATE,BULK_CREATE,READ_ONE,READ_ALL,UPDATE,DELETE_ONE,DELETE_ALL" binding:"required"`
 	} `json:"data"`
 }
 
 type SingleCreateRecordRequestStruct struct {
 	Data struct {
-		Type      enums.Operation `json:"type" enum:"CREATE"`
+		Type      enums.Operation `json:"type" enum:"CREATE" binding:"required"`
 		TableName string          `json:"tableName"`
 		Record    interface{}     `json:"record"`
 	} `json:"data"`
@@ -25,7 +25,7 @@ type SingleCreateRecordRequestStruct struct {
 
 type BulkCreateRecordRequestStruct struct {
 	Data struct {
-		Type      enums.Operation `json:"type" enum:"BULK_CREATE"`
+		Type      enums.Operation `json:"type" enum:"BULK_CREATE" binding:"required"`
 		TableName string          `json:"tableName"`
 		Record    []interface{}   `json:"record"`
 	} `json:"data"`
@@ -33,7 +33,7 @@ type BulkCreateRecordRequestStruct struct {
 
 type UpdateRecordRequestStruct struct {
 	Data struct {
-		Type      enums.Operation `json:"type" enum:"UPDATE"`
+		Type      enums.Operation `json:"type" enum:"UPDATE" binding:"required"`
 		TableName string          `json:"tableName"`
 		Query     struct {
 			Field string `json:"field"`
@@ -46,7 +46,7 @@ type UpdateRecordRequestStruct struct {
 
 type DeleteRecordRequestStruct struct {
 	Data struct {
-		Type      enums.Operation `json:"type" enum:"DELETE_ONE"`
+		Type      enums.Operation `json:"type" enum:"DELETE_ONE" binding:"required"`
 		TableName string          `json:"tableName"`
 		Query     struct {
 			Field string `json:"field"`
@@ -57,14 +57,14 @@ type DeleteRecordRequestStruct struct {
 
 type BulkDeleteRecordRequestStruct struct {
 	Data struct {
-		Type      enums.Operation `json:"type" enum:"DELETE_ALL"`
+		Type      enums.Operation `json:"type" enum:"DELETE_ALL" binding:"required"`
 		TableName string          `json:"tableName"`
 	} `json:"data"`
 }
 
 type ReadOneRecordRequestStruct struct {
 	Data struct {
-		Type      enums.Operation `json:"type" enum:"READ_ONE"`
+		Type      enums.Operation `json:"type" enum:"READ_ONE" binding:"required"`
 		TableName string          `json:"tableName"`
 		Query     struct {
 			Field string `json:"field"`
@@ -75,7 +75,7 @@ type ReadOneRecordRequestStruct struct {
 
 type BulkReadRequestStruct struct {
 	Data struct {
-		Type      enums.Operation `json:"type" enum:"READ_ALL"`
+		Type      enums.Operation `json:"type" enum:"READ_ALL" binding:"required"`
 		TableName string          `json:"tableName"`
 	} `json:"data"`
 }

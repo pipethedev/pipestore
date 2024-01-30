@@ -6,7 +6,16 @@ import (
 	"pipebase/server/types"
 )
 
-func UpdateOne(updateRequest types.UpdateRecordRequestStruct) error {
+func HandleUpdateRequest(request interface{}) {
+	switch request := request.(type) {
+	case types.UpdateRecordRequestStruct:
+		updateOne(request)
+	default:
+		fmt.Println("Invalid request format for UpdateOperation")
+	}
+}
+
+func updateOne(updateRequest types.UpdateRecordRequestStruct) error {
 	tableName := updateRequest.Data.TableName
 
 	if !helpers.CheckIfTableExists(tableName) {

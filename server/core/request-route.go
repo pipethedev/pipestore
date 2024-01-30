@@ -9,38 +9,27 @@ import (
 )
 
 func RouteOperationRequest(data []byte, genericRequest types.GenericRequest, session *types.Session) {
-	switch genericRequest.Data.Type {
-	case enums.CreateOperation:
-		var SingleCreateRequest types.SingleCreateRecordRequestStruct
-		err := json.Unmarshal(data, &SingleCreateRequest)
-		if err != nil {
-			fmt.Println("Error unmarshaling create request:", err)
-			return
-		}
-		operations.SingleCreate(SingleCreateRequest)
-	case enums.BulkCreateOperation:
-		var BulkCreateRequest types.BulkCreateRecordRequestStruct
-		err := json.Unmarshal(data, &BulkCreateRequest)
-		if err != nil {
-			fmt.Println("Error unmarshaling create request:", err)
-			return
-		}
-		operations.BulkCreate(BulkCreateRequest)
-	case enums.ReadAllOperation:
-		var ReadAllRequest types.BulkReadRequestStruct
-		err := json.Unmarshal(data, &ReadAllRequest)
-		if err != nil {
-			fmt.Println("Error unmarshaling create request:", err)
-			return
-		}
-		operations.ReadAll(ReadAllRequest)
-	case enums.UpdateOperation:
-		var UpdateRequest types.UpdateRecordRequestStruct
-		err := json.Unmarshal(data, &UpdateRequest)
-		if err != nil {
-			fmt.Println("Error unmarshaling create request:", err)
-			return
-		}
-		operations.UpdateOne(UpdateRequest)
+	var request interface{}
+	var response []byte
+
+	err := json.Unmarshal(data, &request)
+	if err != nil {
+		fmt.Println("Error unmarshaling request:", err)
+		return
 	}
+
+	switch genericRequest.Data.Type {
+	case enums.CreateOperation, enums.BulkCreateOperation:
+		operations.HandleCreateRequest(data, request)
+	case enums.ReadOneOperation, enums.ReadAllOperation:
+		response, _ = operations.HandleReadRequest(data, request)
+	case enums.UpdateOperation:
+		operations.HandleUpdateRequest(request)
+	case enums.DeleteOneOperation, enums.DeleteAllOperation:
+		operations.HandleDeleteRequest(data, request)
+	default:
+		fmt.Println("Unknown operation:", genericRequest.Data.Type)
+	}
+
+	_, _ = session.Conn.Write(response)
 }

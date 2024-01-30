@@ -1,11 +1,57 @@
 package operations
 
 import (
+	"encoding/json"
+	"fmt"
+	"pipebase/server/enums"
 	"pipebase/server/helpers"
 	"pipebase/server/types"
 )
 
-func BulkCreate(records types.BulkCreateRecordRequestStruct) error {
+func HandleCreateRequest(jsonData []byte, incomingRequest interface{}) (string, error) {
+	requestMap := incomingRequest.(map[string]interface{})
+	dataMap := requestMap["data"].(map[string]interface{})
+	requestType := dataMap["type"]
+
+	if requestType == string(enums.CreateOperation) {
+		var singleRecord types.SingleCreateRecordRequestStruct
+
+		err := json.Unmarshal(jsonData, &singleRecord)
+		if err != nil {
+			fmt.Println("Error unmarshaling create request:", err)
+			return "Error unmarshaling create request:", err
+		}
+
+		err = singleCreate(singleRecord)
+
+		if err != nil {
+			fmt.Println("Unable to create record", err)
+			return "Unable to create record", err
+		}
+	}
+
+	if requestType == string(enums.BulkCreateOperation) {
+		var bulkRecord types.BulkCreateRecordRequestStruct
+
+		err := json.Unmarshal(jsonData, &bulkRecord)
+
+		if err != nil {
+			fmt.Println("Error unmarshaling create-bulk request:", err)
+			return "Error unmarshaling create-bulk request:", err
+		}
+
+		err = bulkCreate(bulkRecord)
+
+		if err != nil {
+			fmt.Println("Unable to create bulk record", err)
+			return "Unable to create bulk record", err
+		}
+	}
+
+	return "Create operation successfully processed", nil
+}
+
+func bulkCreate(records types.BulkCreateRecordRequestStruct) error {
 	tableName := records.Data.TableName
 
 	if !helpers.CheckIfTableExists(tableName) {
@@ -25,7 +71,7 @@ func BulkCreate(records types.BulkCreateRecordRequestStruct) error {
 	return helpers.WriteTableData(tableName, data)
 }
 
-func SingleCreate(record types.SingleCreateRecordRequestStruct) error {
+func singleCreate(record types.SingleCreateRecordRequestStruct) error {
 	tableName := record.Data.TableName
 
 	if !helpers.CheckIfTableExists(tableName) {
