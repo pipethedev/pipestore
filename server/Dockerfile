@@ -14,15 +14,12 @@ COPY . .
 
 ARG PORT
 
-ENV PORT=${PORT}
+ENV PORT=57710
 
 RUN go build -o tmp/main .
 
-# Clean up the Go module and ensure dependencies are correctly tracked
 RUN go mod tidy
 
-# Expose the port your application will listen on
 EXPOSE ${PORT}
 
-# Command to run the application
 CMD ["./tmp/main"]

@@ -1,6 +1,6 @@
 package types
 
-import "pipebase/server/enums"
+import "server/enums"
 
 type AuthRequestStruct struct {
 	Auth struct {

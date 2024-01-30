@@ -17,7 +17,7 @@ var config types.InitConfig
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Create pipebase administrative user for connection",
+	Short: "Setup & Create pipebase administrative user for connection",
 	Long:  `Setup your pipebase user, with a username and your connection api key is provided to you`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if username != "" {

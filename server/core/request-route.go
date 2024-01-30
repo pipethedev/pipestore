@@ -3,9 +3,9 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"pipebase/server/core/operations"
-	"pipebase/server/enums"
-	"pipebase/server/types"
+	"server/core/operations"
+	"server/enums"
+	"server/types"
 )
 
 func RouteOperationRequest(data []byte, genericRequest types.GenericRequest, session *types.Session) {

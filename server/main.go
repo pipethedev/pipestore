@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"pipebase/server/config"
-	"pipebase/server/core"
+	"server/config"
+	"server/core"
 
 	"github.com/joho/godotenv"
 )

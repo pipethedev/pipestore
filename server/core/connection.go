@@ -6,9 +6,9 @@ import (
 	"io"
 	"log"
 	"net"
-	"pipebase/cli/services"
-	"pipebase/server/config"
-	"pipebase/server/types"
+	"server/config"
+	"server/helpers"
+	"server/types"
 	"sync"
 	"sync/atomic"
 )
@@ -175,7 +175,7 @@ func extractAuthenticationCredentials(authData []byte) (string, string, error) {
 }
 
 func authenticate(userName string, apiKey string, conn net.Conn) bool {
-	credentials, _ := services.GetCredentialsFromKeychain("pipebase_admin")
+	credentials, _ := helpers.GetCredentialsFromKeychain("pipebase_admin")
 
 	fmt.Println(credentials)
 

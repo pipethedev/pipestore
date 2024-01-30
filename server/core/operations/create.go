@@ -3,9 +3,9 @@ package operations
 import (
 	"encoding/json"
 	"fmt"
-	"pipebase/server/enums"
-	"pipebase/server/helpers"
-	"pipebase/server/types"
+	"server/enums"
+	"server/helpers"
+	"server/types"
 )
 
 func HandleCreateRequest(jsonData []byte, incomingRequest interface{}) ([]byte, error) {
