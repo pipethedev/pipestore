@@ -17,7 +17,7 @@ func SaveCredentials(userCredentials types.UserCredentials) {
 	var err error
 
 	if platform == "darwin" || platform == "linux" {
-		credentials, err = getCredentialsFromKeychain(service)
+		credentials, err = GetCredentialsFromKeychain(service)
 		if credentials != (types.UserCredentials{}) {
 			fmt.Println("Pipebase administrator already exists")
 			return
@@ -57,7 +57,7 @@ func saveCredentialsToKeychain(credentials types.UserCredentials, service string
 	return nil
 }
 
-func getCredentialsFromKeychain(service string) (types.UserCredentials, error) {
+func GetCredentialsFromKeychain(service string) (types.UserCredentials, error) {
 	var credentials types.UserCredentials
 
 	ring, err := keyring.Open(keyring.Config{
