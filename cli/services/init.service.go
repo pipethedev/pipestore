@@ -1,10 +1,12 @@
 package services
 
 import (
+	"cli/types"
+	"cli/utils"
 	"fmt"
-	"pipebase/cli/types"
-	"pipebase/cli/utils"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
 )
 
@@ -30,5 +32,23 @@ func ExecuteInitialization(config types.InitConfig, cmd *cobra.Command, args []s
 
 	SaveCredentials(credentials)
 
-	fmt.Println("Pipebase administrator created successfully.")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+
+	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+	s.Prefix = "Installing PipeStore and starting container... "
+	s.Start()
+
+	err := InstallImageAndRunContainer()
+
+	s.Stop()
+
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	fmt.Println("Operation completed successfully ✅.")
 }

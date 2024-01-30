@@ -175,7 +175,7 @@ func extractAuthenticationCredentials(authData []byte) (string, string, error) {
 }
 
 func authenticate(userName string, apiKey string, conn net.Conn) bool {
-	credentials, _ := helpers.GetCredentialsFromKeychain("pipebase_admin")
+	credentials, _ := helpers.GetCredentialsFromStore()
 
 	fmt.Println(credentials)
 

@@ -4,8 +4,8 @@ Copyright © 2024 NAME HERE davmuri1414@gmail.com
 package cmd
 
 import (
-	"pipebase/cli/services"
-	"pipebase/cli/types"
+	"cli/services"
+	"cli/types"
 
 	"github.com/spf13/cobra"
 )

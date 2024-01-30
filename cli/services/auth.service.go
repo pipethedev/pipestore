@@ -1,81 +1,48 @@
 package services
 
 import (
+	"cli/types"
 	"encoding/json"
 	"fmt"
-	"pipebase/cli/types"
-	"runtime"
-
-	"github.com/99designs/keyring"
+	"os"
 )
 
-func SaveCredentials(userCredentials types.UserCredentials) {
-	service := "pipebase"
-
-	platform := runtime.GOOS
-
-	var err error
-
-	if platform == "darwin" || platform == "linux" {
-		credentials, err = GetCredentialsFromKeychain(service)
-		if credentials != (types.UserCredentials{}) {
-			fmt.Println("Pipebase administrator already exists")
-			return
-		}
-	} else {
-		// Handle other platforms (e.g., store in a file)
-	}
-
-	if err != nil {
-		err = saveCredentialsToKeychain(userCredentials, service)
-		if err != nil {
-			fmt.Println("Error saving credentials to keychain:", err)
-			return
-		}
-	}
+func getCredentialsFilePath() string {
+	return "/app/.pipebase_credentials"
 }
 
-func saveCredentialsToKeychain(credentials types.UserCredentials, service string) error {
-	ring, err := keyring.Open(keyring.Config{
-		ServiceName: service,
-	})
+func SaveCredentials(userCredentials types.UserCredentials) error {
+	configFilePath := getCredentialsFilePath()
+
+	if _, err := os.Stat(configFilePath); err == nil {
+		return fmt.Errorf("pipebase user already authenticated")
+	}
+
+	err := saveCredentialsToConfigFile(userCredentials, configFilePath)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("error saving credentials to config file")
+	}
+
+	return nil
+}
+
+func saveCredentialsToConfigFile(credentials types.UserCredentials, filePath string) error {
+	file, err := os.Create(filePath)
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	credentialsJSON, err := json.Marshal(credentials)
 	if err != nil {
 		return err
 	}
 
-	if err := ring.Set(keyring.Item{Key: "credentials", Data: credentialsJSON}); err != nil {
+	_, err = file.Write(credentialsJSON)
+	if err != nil {
 		return err
 	}
 
-	fmt.Println("User credentials saved to keychain")
-
 	return nil
-}
-
-func GetCredentialsFromKeychain(service string) (types.UserCredentials, error) {
-	var credentials types.UserCredentials
-
-	ring, err := keyring.Open(keyring.Config{
-		ServiceName: service,
-	})
-	if err != nil {
-		return credentials, err
-	}
-
-	credentialsJSON, err := ring.Get("credentials")
-	if err != nil {
-		return credentials, err
-	}
-
-	err = json.Unmarshal([]byte(credentialsJSON.Data), &credentials)
-	if err != nil {
-		return credentials, err
-	}
-
-	return credentials, nil
 }

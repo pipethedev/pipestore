@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 )
 
-const apiKeyLength = 32
+const apiKeyLength = 16
 
 func GenerateAPIKey() (string, error) {
 	key := make([]byte, apiKeyLength)

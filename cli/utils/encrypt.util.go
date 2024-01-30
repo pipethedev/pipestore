@@ -1,8 +1,6 @@
 package utils
 
-import (
-	"pipebase/cli/types"
-)
+import "cli/types"
 
 func Encrypt(credentials types.UserCredentials, key string) (types.UserCredentials, error) {
 
