@@ -20,13 +20,13 @@ func RouteOperationRequest(data []byte, genericRequest types.GenericRequest, ses
 
 	switch genericRequest.Data.Type {
 	case enums.CreateOperation, enums.BulkCreateOperation:
-		operations.HandleCreateRequest(data, request)
+		response, _ = operations.HandleCreateRequest(data, request)
 	case enums.ReadOneOperation, enums.ReadAllOperation:
 		response, _ = operations.HandleReadRequest(data, request)
 	case enums.UpdateOperation:
-		operations.HandleUpdateRequest(request)
+		response, _ = operations.HandleUpdateRequest(data, request)
 	case enums.DeleteOneOperation, enums.DeleteAllOperation:
-		operations.HandleDeleteRequest(data, request)
+		response, _ = operations.HandleDeleteRequest(data, request)
 	default:
 		fmt.Println("Unknown operation:", genericRequest.Data.Type)
 	}

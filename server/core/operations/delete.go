@@ -1,40 +1,53 @@
 package operations
 
 import (
+	"encoding/json"
 	"fmt"
+	"pipebase/server/enums"
 	"pipebase/server/helpers"
 	"pipebase/server/types"
-
-	"github.com/grahms/godantic"
 )
 
-func HandleDeleteRequest(jsonData []byte, request interface{}) {
-	validator := godantic.Validate{}
+func HandleDeleteRequest(jsonData []byte, incomingRequest interface{}) ([]byte, error) {
+	requestMap := incomingRequest.(map[string]interface{})
+	dataMap := requestMap["data"].(map[string]interface{})
+	requestType := dataMap["type"]
 
-	switch request := request.(type) {
-	case types.BulkDeleteRecordRequestStruct:
-		var bulkData types.BulkDeleteRecordRequestStruct
+	if requestType == string(enums.DeleteAllOperation) {
+		var bulkDeleteRequest types.BulkDeleteRecordRequestStruct
 
-		err := validator.BindJSON(jsonData, &bulkData)
+		err := json.Unmarshal(jsonData, &bulkDeleteRequest)
+		if err != nil {
+			fmt.Println("Error unmarshaling create request:", err)
+			return []byte("Error unmarshaling create request:"), err
+		}
+
+		err = deleteAll(bulkDeleteRequest)
 
 		if err != nil {
-			fmt.Println("Error validating create request:", err)
-			return
+			fmt.Println("Unable to create record", err)
+			return []byte("Unable to create record"), err
 		}
-		deleteAll(request)
-	case types.DeleteRecordRequestStruct:
-		var singleData types.DeleteRecordRequestStruct
-
-		err := validator.BindJSON(jsonData, &singleData)
-
-		if err != nil {
-			fmt.Println("Error validating create request:", err)
-			return
-		}
-		deleteOne(request)
-	default:
-		fmt.Println("Invalid request format for DeleteAllOperation")
 	}
+
+	if requestType == string(enums.DeleteOneOperation) {
+		var deleteOneRequest types.DeleteRecordRequestStruct
+
+		err := json.Unmarshal(jsonData, &deleteOneRequest)
+		if err != nil {
+			fmt.Println("Error unmarshaling delete-one request:", err)
+			return []byte("Error unmarshaling delete-one request:"), err
+		}
+
+		err = deleteOne(deleteOneRequest)
+
+		if err != nil {
+			fmt.Println("Unable to create record", err)
+			return []byte("Unable to create record"), err
+		}
+	}
+
+	return []byte("Delete operation successfully processed"), nil
 }
 
 func deleteAll(deleteRequest types.BulkDeleteRecordRequestStruct) error {

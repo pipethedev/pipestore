@@ -8,7 +8,7 @@ import (
 	"pipebase/server/types"
 )
 
-func HandleCreateRequest(jsonData []byte, incomingRequest interface{}) (string, error) {
+func HandleCreateRequest(jsonData []byte, incomingRequest interface{}) ([]byte, error) {
 	requestMap := incomingRequest.(map[string]interface{})
 	dataMap := requestMap["data"].(map[string]interface{})
 	requestType := dataMap["type"]
@@ -19,14 +19,14 @@ func HandleCreateRequest(jsonData []byte, incomingRequest interface{}) (string, 
 		err := json.Unmarshal(jsonData, &singleRecord)
 		if err != nil {
 			fmt.Println("Error unmarshaling create request:", err)
-			return "Error unmarshaling create request:", err
+			return []byte("Error unmarshaling create request:"), err
 		}
 
 		err = singleCreate(singleRecord)
 
 		if err != nil {
 			fmt.Println("Unable to create record", err)
-			return "Unable to create record", err
+			return []byte("Unable to create record"), err
 		}
 	}
 
@@ -37,18 +37,18 @@ func HandleCreateRequest(jsonData []byte, incomingRequest interface{}) (string, 
 
 		if err != nil {
 			fmt.Println("Error unmarshaling create-bulk request:", err)
-			return "Error unmarshaling create-bulk request:", err
+			return []byte("Error unmarshaling create-bulk request:"), err
 		}
 
 		err = bulkCreate(bulkRecord)
 
 		if err != nil {
 			fmt.Println("Unable to create bulk record", err)
-			return "Unable to create bulk record", err
+			return []byte("Unable to create bulk record"), err
 		}
 	}
 
-	return "Create operation successfully processed", nil
+	return []byte("Create operation successfully processed"), nil
 }
 
 func bulkCreate(records types.BulkCreateRecordRequestStruct) error {

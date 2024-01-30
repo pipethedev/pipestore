@@ -1,18 +1,35 @@
 package operations
 
 import (
+	"encoding/json"
 	"fmt"
+	"pipebase/server/enums"
 	"pipebase/server/helpers"
 	"pipebase/server/types"
 )
 
-func HandleUpdateRequest(request interface{}) {
-	switch request := request.(type) {
-	case types.UpdateRecordRequestStruct:
-		updateOne(request)
-	default:
-		fmt.Println("Invalid request format for UpdateOperation")
+func HandleUpdateRequest(jsonData []byte, incomingRequest interface{}) ([]byte, error) {
+	requestMap := incomingRequest.(map[string]interface{})
+	dataMap := requestMap["data"].(map[string]interface{})
+	requestType := dataMap["type"]
+
+	if requestType == string(enums.UpdateOperation) {
+		var updateRecord types.UpdateRecordRequestStruct
+
+		err := json.Unmarshal(jsonData, &updateRecord)
+		if err != nil {
+			fmt.Println("Error unmarshaling update request:", err)
+			return []byte("Error unmarshaling update request:"), err
+		}
+
+		err = updateOne(updateRecord)
+
+		if err != nil {
+			fmt.Println("Unable to update record", err)
+			return []byte("Unable to update record"), err
+		}
 	}
+	return []byte("Update operation successfully processed"), nil
 }
 
 func updateOne(updateRequest types.UpdateRecordRequestStruct) error {
