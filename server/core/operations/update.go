@@ -10,7 +10,7 @@ func UpdateOne(updateRequest types.UpdateRecordRequestStruct) error {
 	tableName := updateRequest.Data.TableName
 
 	if !helpers.CheckIfTableExists(tableName) {
-		return fmt.Errorf("Table %s does not exist", tableName)
+		return fmt.Errorf("table %s does not exist", tableName)
 	}
 
 	data, err := helpers.ReadTableData(tableName)
@@ -27,7 +27,7 @@ func UpdateOne(updateRequest types.UpdateRecordRequestStruct) error {
 	}
 
 	if index == -1 {
-		return fmt.Errorf("Record not found in table %s with the provided query", tableName)
+		return fmt.Errorf("record not found in table %s with the provided query", tableName)
 	}
 
 	data[index] = updateRequest.Data.Record
