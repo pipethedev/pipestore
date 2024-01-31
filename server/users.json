@@ -1,0 +1,10 @@
+[
+  {
+    "age": 30,
+    "createdAt": "2024-01-31T10:01:45.067387+01:00",
+    "email": "john@example.com",
+    "id": "723e894b-e89b-41df-87f8-cee435d0c09f",
+    "name": "John Doe",
+    "updatedAt": "2024-01-31T10:01:45.067439+01:00"
+  }
+]

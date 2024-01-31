@@ -7,42 +7,42 @@ import (
 	"os"
 )
 
-func getCredentialsFilePath() string {
-	return "/app/.pipebase_credentials"
-}
+const credentialsEnvVar = "PIPEBASE_CREDENTIALS"
 
 func SaveCredentials(userCredentials types.UserCredentials) error {
-	configFilePath := getCredentialsFilePath()
-
-	if _, err := os.Stat(configFilePath); err == nil {
+	// Check if credentials are already stored in the environment
+	if os.Getenv(credentialsEnvVar) != "" {
 		return fmt.Errorf("pipebase user already authenticated")
 	}
 
-	err := saveCredentialsToConfigFile(userCredentials, configFilePath)
+	// Stringify the credentials
+	credentialsJSON, err := json.Marshal(userCredentials)
 	if err != nil {
-		fmt.Println(err)
-		return fmt.Errorf("error saving credentials to config file")
+		return err
+	}
+
+	// Store the credentials in the environment
+	err = os.Setenv(credentialsEnvVar, string(credentialsJSON))
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func saveCredentialsToConfigFile(credentials types.UserCredentials, filePath string) error {
-	file, err := os.Create(filePath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	credentialsJSON, err := json.Marshal(credentials)
-	if err != nil {
-		return err
+func GetCredentialsFromEnv() (types.UserCredentials, error) {
+	// Retrieve credentials from the environment
+	credentialsJSON := os.Getenv(credentialsEnvVar)
+	if credentialsJSON == "" {
+		return types.UserCredentials{}, fmt.Errorf("pipebase user not authenticated")
 	}
 
-	_, err = file.Write(credentialsJSON)
+	// Parse the JSON string to UserCredentials
+	var credentials types.UserCredentials
+	err := json.Unmarshal([]byte(credentialsJSON), &credentials)
 	if err != nil {
-		return err
+		return types.UserCredentials{}, err
 	}
 
-	return nil
+	return credentials, nil
 }

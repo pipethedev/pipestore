@@ -44,7 +44,7 @@ func installPipeStoreImage() error {
 func startPipeStoreContainer() error {
 	fmt.Println("Starting PipeStore container...")
 
-	cmd := exec.Command("docker", "run", "--name", containerName, "-d", imageName)
+	cmd := exec.Command("docker", "run", "-v", "pipebase_volume:/app", "-p", "57710:57710", "-p", containerName)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

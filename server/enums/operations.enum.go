@@ -16,4 +16,8 @@ const (
 	DeleteOneOperation Operation = "DELETE_ONE"
 
 	DeleteAllOperation Operation = "DELETE_ALL"
+
+	AddConstraintOperation Operation = "ADD_CONSTRAINT"
+
+	RemoveConstraintOperation Operation = "REMOVE_CONSTRAINT"
 )

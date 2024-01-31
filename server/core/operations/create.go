@@ -6,6 +6,7 @@ import (
 	"server/enums"
 	"server/helpers"
 	"server/types"
+	"time"
 )
 
 func HandleCreateRequest(jsonData []byte, incomingRequest interface{}) ([]byte, error) {
@@ -61,12 +62,23 @@ func bulkCreate(records types.BulkCreateRecordRequestStruct) error {
 	}
 
 	data, err := helpers.ReadTableData(tableName)
-
 	if err != nil {
 		return err
 	}
 
-	data = append(data, records.Data.Record...)
+	for _, record := range records.Data.Record {
+		record["id"] = helpers.GenerateUUID()
+		record["createdAt"] = time.Now()
+		record["updatedAt"] = time.Now()
+	}
+
+	rearrangedRecords := helpers.RearrangeRecords(records.Data.Record)
+	interfaceRecords := make([]interface{}, len(rearrangedRecords))
+	for i, r := range rearrangedRecords {
+		interfaceRecords[i] = r
+	}
+
+	data = append(data, interfaceRecords...)
 
 	return helpers.WriteTableData(tableName, data)
 }
@@ -85,8 +97,12 @@ func singleCreate(record types.SingleCreateRecordRequestStruct) error {
 	if err != nil {
 		return err
 	}
+	record.Data.Record["id"] = helpers.GenerateUUID()
+	record.Data.Record["createdAt"] = time.Now()
+	record.Data.Record["updatedAt"] = time.Now()
 
-	data = append(data, record.Data.Record)
+	rearrangedRecord := helpers.RearrangeFields(record.Data.Record)
+	data = append(data, rearrangedRecord)
 
 	return helpers.WriteTableData(tableName, data)
 }
