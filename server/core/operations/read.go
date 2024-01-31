@@ -29,7 +29,8 @@ func StartIndexing() {
 		}
 
 		for _, record := range tableData {
-			err := index.Index(getRecordID(record), record)
+			jsonData, _ := json.Marshal(record)
+			err = index.Index(getRecordID(record), string(jsonData))
 			if err != nil {
 				fmt.Printf("Error indexing document for table %s: %v\n", tableName, err)
 				return
@@ -38,6 +39,7 @@ func StartIndexing() {
 
 		indexesMap.Store(tableName, index)
 	}
+	fmt.Println("Indexing complete")
 }
 
 func getRecordID(record interface{}) string {
@@ -132,8 +134,9 @@ func readOne(request types.ReadOneRecordRequestStruct, index bleve.Index) ([]byt
 	if !helpers.CheckIfTableExists(tableName) {
 		return nil, fmt.Errorf("table %s does not exist", tableName)
 	}
+	queryValue := request.Data.Query.Value
 
-	query := bleve.NewMatchQuery(request.Data.Query.Value)
+	query := bleve.NewQueryStringQuery(queryValue)
 
 	search := bleve.NewSearchRequest(query)
 
@@ -149,21 +152,25 @@ func readOne(request types.ReadOneRecordRequestStruct, index bleve.Index) ([]byt
 
 	recordID := searchResults.Hits[0].ID
 
-	record, err := index.Document(recordID)
-	fmt.Println(record)
+	doc, err := index.Document(recordID)
 	if err != nil {
 		return nil, err
 	}
 
-	recordMap := make(map[string]interface{})
-
-	for _, field := range record.Fields {
-		fmt.Println(field.Name(), string(field.Value()))
-
-		recordMap[field.Name()] = string(field.Value())
+	var jsonField string
+	for _, field := range doc.Fields {
+		if field.Name() == "" {
+			jsonField = string(field.Value())
+			break
+		}
 	}
 
-	jsonData, err := json.Marshal(recordMap)
+	var recordMap map[string]interface{}
+	if err := json.Unmarshal([]byte(jsonField), &recordMap); err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.MarshalIndent(recordMap, "", "  ")
 	if err != nil {
 		return nil, err
 	}

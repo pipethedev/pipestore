@@ -49,6 +49,8 @@ func HandleCreateRequest(jsonData []byte, incomingRequest interface{}) ([]byte, 
 		}
 	}
 
+	StartIndexing()
+
 	return []byte("Create operation successfully processed\n"), nil
 }
 

@@ -177,8 +177,6 @@ func extractAuthenticationCredentials(authData []byte) (string, string, error) {
 func authenticate(userName string, apiKey string, conn net.Conn) bool {
 	credentials, _ := helpers.GetCredentialsFromEnv()
 
-	fmt.Println(credentials)
-
 	if userName != credentials.Username {
 		fmt.Println("Authentication failed [Invalid username] for:", conn.RemoteAddr())
 

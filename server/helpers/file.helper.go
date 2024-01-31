@@ -62,15 +62,6 @@ func WriteTableData(tableName string, data []interface{}) error {
 
 	_, err = file.Write(encodedData)
 
-	// key := []byte("<SECRET_API_KEY>")
-
-	// encryptedData, err := EncryptFile(tableName+".json", key)
-
-	// if err != nil {
-	// 	log.Fatalln("Unable to encrypt file:", err)
-	// }
-	// os.WriteFile("encrypted_"+tableName+".json", encryptedData, 0644)
-
 	return err
 }
 

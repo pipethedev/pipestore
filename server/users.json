@@ -6,5 +6,37 @@
     "id": "723e894b-e89b-41df-87f8-cee435d0c09f",
     "name": "John Doe",
     "updatedAt": "2024-01-31T10:01:45.067439+01:00"
+  },
+  {
+    "age": 25,
+    "createdAt": "2024-01-31T12:41:50.644347+01:00",
+    "email": "alice@example.com",
+    "id": "c058527b-0673-4fc9-9f5d-f4259c372d78",
+    "name": "Alice",
+    "updatedAt": "2024-01-31T12:41:50.644356+01:00"
+  },
+  {
+    "age": 28,
+    "createdAt": "2024-01-31T12:41:50.644359+01:00",
+    "email": "bob@example.com",
+    "id": "f9a1680a-f629-44b2-b011-9de213f5347d",
+    "name": "Bob",
+    "updatedAt": "2024-01-31T12:41:50.644359+01:00"
+  },
+  {
+    "age": 20,
+    "createdAt": "2024-01-31T12:46:15.597541+01:00",
+    "email": "dave@example.com",
+    "id": "985bda90-8402-4824-ae39-583d527ef30d",
+    "name": "David",
+    "updatedAt": "2024-01-31T12:46:15.597557+01:00"
+  },
+  {
+    "age": 17,
+    "createdAt": "2024-01-31T12:46:15.59756+01:00",
+    "email": "enyy@example.com",
+    "id": "f74edbad-0485-4dee-ab74-461300ade914",
+    "name": "Eniola",
+    "updatedAt": "2024-01-31T12:46:15.59756+01:00"
   }
 ]
