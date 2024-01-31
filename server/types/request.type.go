@@ -81,8 +81,9 @@ type ReadOneRecordRequestStruct struct {
 		Type      enums.Operation `json:"type" enum:"READ_ONE" binding:"required"`
 		TableName string          `json:"tableName"`
 		Query     struct {
-			Field string `json:"field"`
-			Value string `json:"value"`
+			Field    string         `json:"field"`
+			Operator enums.Operator `json:"operator"`
+			Value    string         `json:"value"`
 		} `json:"query"`
 	} `json:"data"`
 }
