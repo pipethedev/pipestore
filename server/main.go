@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	_ = godotenv.Load()
+	godotenv.Load()
 
 	port := config.LoadConfig().PORT
 

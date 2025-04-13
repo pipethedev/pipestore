@@ -134,7 +134,8 @@ func readOne(request types.ReadOneRecordRequestStruct, index bleve.Index) ([]byt
 	if !helpers.CheckIfTableExists(tableName) {
 		return nil, fmt.Errorf("table %s does not exist", tableName)
 	}
-	queryValue := request.Data.Query.Value
+
+	queryValue := request.Data.Query.Value.(string)
 
 	query := bleve.NewQueryStringQuery(queryValue)
 

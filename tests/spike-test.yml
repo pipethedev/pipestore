@@ -1,0 +1,20 @@
+config:
+  target: "http://localhost:3333"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: "Warm up phase"
+    - duration: 30
+      arrivalRate: 100
+      name: "Spike phase"
+    - duration: 60
+      arrivalRate: 10
+      name: "Cooldown phase"
+  defaults:
+    headers:
+      content-type: "application/json"
+
+scenarios:
+  - flow:
+      - get:
+          url: "/api/v1/database/action/get-all"

@@ -1,0 +1,15 @@
+config:
+  target: 'http://localhost:3333'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+scenarios:
+  - flow:
+    - post:
+        url: '/api/v1/database/authentication'
+        json:
+          username: 'administrator'
+          password: 'FGDgty783eujrdhf!'
